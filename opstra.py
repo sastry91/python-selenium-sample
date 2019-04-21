@@ -10,14 +10,17 @@ import time
 from datetime import date
 import datetime
 from sys import argv
+
+
 try:
-	today = str(date.today())
-	timeStamp = str(datetime.datetime.now())
-	timeStamp = timeStamp.replace(":","")
-	print(today)   # '2019-4-21'
-	print(timeStamp)
+    today = str(date.today())
+    timeStamp = str(datetime.datetime.now())
+    timeStamp = timeStamp.replace(":", "")
+    print(today)  # '2017-12-26'
+    print(timeStamp)
     excel_location = argv[1]
     sheet_name = argv[2]
+    chrome_driver_path = argv[3]
     print(excel_location)
     wb = xl.load_workbook(excel_location)
     current_sheet = wb[sheet_name]
@@ -33,15 +36,14 @@ try:
     option.add_argument("--incognito")
 
 # Create new Instance of Chrome in incognito mode
-    browser = webdriver.Chrome(executable_path='C://Users//magundu//Documents//Python//Screen-Scraping//chromedriver', chrome_options=option)
+    browser = webdriver.Chrome(executable_path=chrome_driver_path, chrome_options=option)
 
 # Go to desired website
     browser.get("http://opstra.definedge.com/openinterest")
-    browser.implicitly_wait(2)
-    browser.implicitly_wait(2)
+    browser.implicitly_wait(4)
     time.sleep(15)
     browser.find_element_by_xpath("//div[@class='v-input__control']").click()
-    wb2 = xl.load_workbook('stockprice.xlsx')
+    wb2 = xl.load_workbook(excel_location)
     current_sheet = wb2[today]
     current_cell_header1 = current_sheet.cell(1, 1)
     current_cell_header1.value = 'Stock Symbol'
@@ -69,7 +71,7 @@ try:
         stock_value.send_keys(eachStock)
         browser.implicitly_wait(2)
         stock_value.send_keys(u'\ue007')
-        browser.implicitly_wait(10)
+        #browser.implicitly_wait(10)
         time.sleep(15)
         print(browser.find_element_by_xpath("//input[@aria-label='Select Expiry']").get_attribute('value'))
         current_cell = current_sheet.cell(rowCounter, 1)
