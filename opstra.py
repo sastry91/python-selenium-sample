@@ -10,7 +10,8 @@ import time
 from datetime import date
 import datetime
 from sys import argv
-
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 try:
     today = str(date.today())
@@ -72,7 +73,7 @@ try:
         browser.implicitly_wait(2)
         stock_value.send_keys(u'\ue007')
         #browser.implicitly_wait(10)
-        time.sleep(15)
+        time.sleep(12)
         print(browser.find_element_by_xpath("//input[@aria-label='Select Expiry']").get_attribute('value'))
         current_cell = current_sheet.cell(rowCounter, 1)
         current_cell.value = eachStock
@@ -88,7 +89,6 @@ try:
             current_cell3 = current_sheet.cell(rowCounter, columnCounter)
             current_cell3.value = price[1].strip()
             # price("price with trim --")
-            time.sleep(3)
             columnCounter += 1
         rowCounter += 1
     wb2.save(excel_location)
