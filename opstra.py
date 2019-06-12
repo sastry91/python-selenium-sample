@@ -8,11 +8,11 @@ import openpyxl as xl
 from openpyxl import Workbook
 import time
 from datetime import date
-import datetime
+import datetime, calendar
 from sys import argv
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-
+from LastThursday import MyLastThursday
 try:
     today = str(date.today())
     timeStamp = str(datetime.datetime.now())
@@ -43,57 +43,84 @@ try:
     browser.get("http://opstra.definedge.com/openinterest")
     browser.implicitly_wait(4)
     time.sleep(15)
-    browser.find_element_by_xpath("//div[@class='v-input__control']").click()
     wb2 = xl.load_workbook(excel_location)
-    current_sheet = wb2[today]
-    current_cell_header1 = current_sheet.cell(1, 1)
-    current_cell_header1.value = 'Stock Symbol'
-    current_cell_header2 = current_sheet.cell(1, 2)
-    current_cell_header2.value = 'Expiry Date'
-    current_cell_header3 = current_sheet.cell(1, 3)
-    current_cell_header3.value = 'Spot price'
-    current_cell_header4 = current_sheet.cell(1, 4)
-    current_cell_header4.value = 'Futures price'
-    current_cell_header5 = current_sheet.cell(1, 5)
-    current_cell_header5.value = 'Lot size'
-    current_cell_header6 = current_sheet.cell(1, 6)
-    current_cell_header6.value = 'PCR'
-    current_cell_header7 = current_sheet.cell(1, 7)
-    current_cell_header7.value = 'MaxPain Strike'
-    current_cell_header8 = current_sheet.cell(1, 8)
-    current_cell_header8.value = 'Modified MaxPain'
-    rowCounter=2
-    for eachStock in my_stock_list:
-        print(eachStock)
-        time.sleep(2)
-        stock_value = browser.find_element_by_xpath("//input[@aria-label='Select Ticker']")
-        stock_value.clear()
-        browser.implicitly_wait(1)
-        stock_value.send_keys(eachStock)
-        browser.implicitly_wait(2)
-        stock_value.send_keys(u'\ue007')
-        #browser.implicitly_wait(10)
-        time.sleep(12)
-        print(browser.find_element_by_xpath("//input[@aria-label='Select Expiry']").get_attribute('value'))
-        current_cell = current_sheet.cell(rowCounter, 1)
-        current_cell.value = eachStock
-        current_cell2 = current_sheet.cell(rowCounter, 2)
-        current_cell2.value = str(browser.find_element_by_xpath("//input[@aria-label='Select Expiry']").get_attribute('value'))
-        all_spans = browser.find_elements_by_xpath("//span[@class='v-chip__content']")
-        columnCounter = 3
-        for eachSpan in all_spans:
-            prices = str(eachSpan.text)
-            price = prices.split(':')
-            print(price)
-            print(price[1].strip())
-            current_cell3 = current_sheet.cell(rowCounter, columnCounter)
-            current_cell3.value = price[1].strip()
-            # price("price with trim --")
-            columnCounter += 1
-        rowCounter += 1
-    wb2.save(excel_location)
+    MyLastThursdayObj = MyLastThursday()
+    last_thursday_date = MyLastThursdayObj.LastThInMonth()
+    browser.find_element_by_xpath("//div[@class='v-input__control']").click()
+    time.sleep(2)
+    try:
+        current_sheet = wb2[today]
+        current_cell_header1 = current_sheet.cell(1, 1)
+        current_cell_header1.value = 'Stock Symbol'
+        current_cell_header2 = current_sheet.cell(1, 2)
+        current_cell_header2.value = 'Expiry Date'
+        current_cell_header3 = current_sheet.cell(1, 3)
+        current_cell_header3.value = 'Spot price'
+        current_cell_header4 = current_sheet.cell(1, 4)
+        current_cell_header4.value = 'Futures price'
+        current_cell_header5 = current_sheet.cell(1, 5)
+        current_cell_header5.value = 'Lot size'
+        current_cell_header6 = current_sheet.cell(1, 6)
+        current_cell_header6.value = 'PCR'
+        current_cell_header7 = current_sheet.cell(1, 7)
+        current_cell_header7.value = 'MaxPain Strike'
+        current_cell_header8 = current_sheet.cell(1, 8)
+        current_cell_header8.value = 'Modified MaxPain'
+        rowCounter=2
+        isNew = False
+        for eachStock in my_stock_list:
+            print(eachStock)
+            if isNew:
+                browser.find_element_by_xpath("//div[@class='v-input__control']").click()
+                time.sleep(2)
+            stock_value = browser.find_element_by_xpath("//input[@aria-label='Select Ticker']")
+            stock_value.clear()
+            browser.implicitly_wait(1)
+            stock_value.send_keys(eachStock)
+            browser.implicitly_wait(2)
+            stock_value.send_keys(u'\ue007')
+            #browser.implicitly_wait(10)
+            time.sleep(12)
+            if browser.find_element_by_xpath("//input[@aria-label='Select Expiry']").get_attribute('value') == last_thursday_date:
+                print("Date is already set")
+                isNew = False
+            else:
+                print("Setting required date") #v-select__slot
+                browser.find_element_by_css_selector('.flex:nth-child(2) .v-icon').click()
+                #browser.find_element_by_xpath("//div[@class='v-input__control'][position()=2]").click()
+                time.sleep(2)
+                date_value = browser.find_element_by_xpath("//input[@aria-label='Select Expiry']")
+                date_value.clear()
+                browser.implicitly_wait(1)
+                date_value.send_keys(last_thursday_date)
+                browser.implicitly_wait(2)
+                date_value.send_keys(u'\ue007')
+                time.sleep(13)
+                isNew = True
+            print(browser.find_element_by_xpath("//input[@aria-label='Select Expiry']").get_attribute('value'))
+            current_cell = current_sheet.cell(rowCounter, 1)
+            current_cell.value = eachStock
+            current_cell2 = current_sheet.cell(rowCounter, 2)
+            current_cell2.value = str(browser.find_element_by_xpath("//input[@aria-label='Select Expiry']").get_attribute('value'))
+            all_spans = browser.find_elements_by_xpath("//span[@class='v-chip__content']")
+            columnCounter = 3
+            for eachSpan in all_spans:
+                prices = str(eachSpan.text)
+                price = prices.split(':')
+                print(price)
+                print(price[1].strip())
+                current_cell3 = current_sheet.cell(rowCounter, columnCounter)
+                current_cell3.value = price[1].strip()
+                # price("price with trim --")
+                columnCounter += 1
+            rowCounter += 1
+        wb2.save(excel_location)
+    except Exception as ex:
+        wb2.save(excel_location)
+        print(ex)
+    finally:
+        browser.close()
 except Exception as e:
     print(e)
-finally:
-    browser.close()
+
 

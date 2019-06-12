@@ -53,35 +53,40 @@ try:
     rowCounter=2
 
     for eachStock in my_stock_list:
-        print(eachStock)
-        wait = WebDriverWait(browser, 10)
-        adults_element = wait.until(EC.presence_of_element_located((By.ID, "QuoteSearch")))
-        select = Select(adults_element)
-        select.select_by_visible_text("Equity Derivatives")
-        # time.sleep(10)
-        # wait.until(EC.presence_of_element_located((By.XPATH,"//input[@class='arrow']")))
-        stock_value = browser.find_element_by_id('fokeyword')
-        # stock_value = browser.find_element_by_xpath("//input[@class='arrow']")
-        stock_value.clear()
-        browser.implicitly_wait(1)
-        stock_value.send_keys(eachStock)
-        time.sleep(2)
-        stock_value.send_keys(u'\ue007')
-        time.sleep(3)
-        select_element = Select(browser.find_element_by_id("expiryDates"))
-        print(select_element.options[2].text)
-        select_element.select_by_visible_text(select_element.options[2].text)
-        browser.find_element_by_css_selector('div>img').click()
-        time.sleep(2)
-        vwap_value = browser.find_element_by_id('vwap').text
-        print(vwap_value)
-        current_cell_header1 = current_sheet.cell(rowCounter, 1)
-        current_cell_header1.value = eachStock
-        current_cell_header1 = current_sheet.cell(rowCounter, 2)
-        current_cell_header1.value = vwap_value
+        try:
+            print(eachStock)
+            wait = WebDriverWait(browser, 10)
+            adults_element = wait.until(EC.presence_of_element_located((By.ID, "QuoteSearch")))
+            select = Select(adults_element)
+            select.select_by_visible_text("Equity Derivatives")
+            # time.sleep(10)
+            # wait.until(EC.presence_of_element_located((By.XPATH,"//input[@class='arrow']")))
+            stock_value = browser.find_element_by_id('fokeyword')
+            # stock_value = browser.find_element_by_xpath("//input[@class='arrow']")
+            stock_value.clear()
+            browser.implicitly_wait(1)
+            stock_value.send_keys(eachStock)
+            time.sleep(2)
+            stock_value.send_keys(u'\ue007')
+            time.sleep(3)
+            select_element = Select(browser.find_element_by_id("expiryDates"))
+            print(select_element.options[2].text)
+            select_element.select_by_visible_text(select_element.options[2].text)
+            browser.find_element_by_css_selector('div>img').click()
+            time.sleep(2)
+            vwap_value = browser.find_element_by_id('vwap').text
+            print(vwap_value)
+            current_cell_header1 = current_sheet.cell(rowCounter, 1)
+            current_cell_header1.value = eachStock
+            current_cell_header1 = current_sheet.cell(rowCounter, 2)
+            current_cell_header1.value = vwap_value
+        except Exception as ex:
+            print(ex)
+            continue
     wb2.save(excel_location)
 except Exception as e:
     print(e)
 finally:
+    wb2.save(excel_location)
     browser.close()
 
