@@ -49,7 +49,9 @@ try:
     current_cell_header1 = current_sheet.cell(1, 1)
     current_cell_header1.value = 'Stock Symbol'
     current_cell_header2 = current_sheet.cell(1, 2)
-    current_cell_header2.value = 'VWAP Value'
+    current_cell_header2.value = 'Date'
+    current_cell_header3 = current_sheet.cell(1, 3)
+    current_cell_header3.value = 'VWAP Value'
     rowCounter=2
 
     for eachStock in my_stock_list:
@@ -79,7 +81,10 @@ try:
             current_cell_header1 = current_sheet.cell(rowCounter, 1)
             current_cell_header1.value = eachStock
             current_cell_header1 = current_sheet.cell(rowCounter, 2)
+            current_cell_header1.value = select_element.options[2].text
+            current_cell_header1 = current_sheet.cell(rowCounter, 3)
             current_cell_header1.value = vwap_value
+            rowCounter += 1
         except Exception as ex:
             print(ex)
             continue
