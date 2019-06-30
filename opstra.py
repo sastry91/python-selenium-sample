@@ -23,6 +23,8 @@ try:
     sheet_name = argv[2]
     chrome_driver_path = argv[3]
     print(excel_location)
+    last_thursday_date = argv[4]
+    print(last_thursday_date)
     wb = xl.load_workbook(excel_location)
     current_sheet = wb[sheet_name]
     my_stock_list = []
@@ -44,8 +46,8 @@ try:
     browser.implicitly_wait(4)
     time.sleep(15)
     wb2 = xl.load_workbook(excel_location)
-    MyLastThursdayObj = MyLastThursday()
-    last_thursday_date = MyLastThursdayObj.LastThInMonth()
+    #MyLastThursdayObj = MyLastThursday()
+    #last_thursday_date = MyLastThursdayObj.LastThInMonth()
     browser.find_element_by_xpath("//div[@class='v-input__control']").click()
     time.sleep(2)
     try:
